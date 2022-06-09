@@ -136,7 +136,7 @@ int xt_sync(Xterminator * xt)
           xt->root.damage.min.row, xt->root.damage.min.column,
           xt->root.damage.max.row, xt->root.damage.max.column);
 
-    if (!(xt->root.state & TwinDamaged))
+    if (!(xt->root.state & TwinRegiond))
     {
         return change;                 /* nothing is damaged */
     }

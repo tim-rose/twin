@@ -12,10 +12,10 @@
 extern "C"
 {
 #endif                                 /* C++ */
-    typedef struct TwinDamage_t
+    typedef struct TwinRegion_t
     {
         int min, max;                   /* region of columns damaged */
-    } TwinDamage, *TwinDamagePtr;
+    } TwinRegion, *TwinDamagePtr;
 
     typedef struct Xterminator_t
     {
@@ -23,7 +23,7 @@ extern "C"
         FILE *output;
         TwinCell* screen;            /* frame */
         Twindow* root;
-        TwinDamage* damage;
+        TwinRegion* damage;
         Twindow* focus;
     } Xterminator, *XterminatorPtr;
 
@@ -34,7 +34,7 @@ extern "C"
     Xterminator* xterminator_init(
         Xterminator* xt,
         int input, FILE *output,
-        TwinCell* screen, TwindowPtr root, TwinDamagePtr damage);
+        TwinCell* screen, TwindowPtr root, TwinRegionPtr damage);
 
 
     void close_xterminator(Xterminator* xt);

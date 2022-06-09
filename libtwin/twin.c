@@ -61,7 +61,7 @@ void twin_reset(Twindow * twin)
     twin->damage.min.column = twin->geometry.size.column;
     twin->damage.max.row = 0;
     twin->damage.max.column = 0;
-    twin->state &= ~TwinDamaged;
+    twin->state &= ~TwinRegiond;
 }
 
 
@@ -101,7 +101,7 @@ int twin_set_cell(Twindow * twin, int row, int col, TwinCell cell)
         {
             twin->damage.max.column = col;
         }
-        twin->state |= TwinDamaged;
+        twin->state |= TwinRegiond;
         twin->frame[offset] = cell;
     }
     return 1;                          /* success */
@@ -288,7 +288,7 @@ Twindow *twin_clear(Twindow * twin)
 
 Twindow *twin_compose(Twindow * dst, Twindow * src, TwinCoordinate offset)
 {
-    if ((src->state & TwinDamaged) && src != dst)   /* catch tx->root */
+    if ((src->state & TwinRegiond) && src != dst)   /* catch tx->root */
     {
         for (int r = src->damage.min.row; r <= src->damage.max.row; ++r)
         {

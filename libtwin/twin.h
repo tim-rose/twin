@@ -29,7 +29,7 @@ extern "C"
 
     typedef enum TwinState_t
     {
-        TwinDamaged = 0x01,
+        TwinRegiond = 0x01,
         TwinVisible = 0x02
     } TwinState;
 
@@ -61,10 +61,10 @@ extern "C"
         TwinCoordinate position, size;
     } TwinGeometry;
 
-    typedef struct TwinDamage_t
+    typedef struct TwinRegion_t
     {
         TwinCoordinate min, max;
-    } TwinDamage;
+    } TwinRegion;
 
 
     struct Twindow_t;
@@ -74,7 +74,7 @@ extern "C"
     {
         const char *name;
         TwinGeometry geometry;
-        TwinDamage damage;             /* if .state & TwinDamage */
+        TwinRegion damage;             /* if .state & TwinDamage */
         TwinCoordinate cursor;
         TwinCell style;
         int state;                     /* TwinState */
