@@ -31,7 +31,7 @@ TwindowPtr twin_init(TwindowPtr twin, const char *name, TwindowPtr parent,
                      TwinCellPtr frame)
 {
     debug("%s(%s)", __func__, name ? name : "unk");
-    memset(twin, 0, sizeof(*twin));     /* nulls linkage pointers */
+    memset(twin, 0, sizeof(*twin));    /* nulls linkage pointers */
     twin->name = name;
     twin->geometry.position.row = row;
     twin->geometry.position.column = column;
@@ -39,8 +39,8 @@ TwindowPtr twin_init(TwindowPtr twin, const char *name, TwindowPtr parent,
     twin->geometry.size.column = width;
     twin->frame = frame;
     twin->style = blank;
-    twin_reset(twin);                   /* not damaged */
-    twin_clear(twin);                   /* all spaces */
+    twin_reset(twin);                  /* not damaged */
+    twin_clear(twin);                  /* all spaces */
     return twin;
 }
 
@@ -78,13 +78,13 @@ int twin_set_cell(TwindowPtr twin, int row, int col, TwinCell cell)
     if (row < 0 || row > twin->geometry.size.row
         || col < 0 || col > twin->geometry.size.column)
     {
-        return 0;                       /* failure: bounds check */
+        return 0;                      /* failure: bounds check */
     }
 
     int offset = twin_cell(twin->geometry, row, col);
 
     if (memcmp(&cell, &twin->frame[offset], sizeof(TwinCell)) != 0)
-    {                                   /* update damage */
+    {                                  /* update damage */
         if (row < twin->damage.min.row)
         {
             twin->damage.min.row = row;
@@ -104,7 +104,7 @@ int twin_set_cell(TwindowPtr twin, int row, int col, TwinCell cell)
         twin->state |= TwinDamaged;
         twin->frame[offset] = cell;
     }
-    return 1;                           /* success */
+    return 1;                          /* success */
 }
 
 
@@ -119,7 +119,7 @@ TwindowPtr twin_puts(TwindowPtr twin, const char *text)
         {
             break;                     /* overflow */
         }
-        cell.ch = (uint8_t) *text;
+        cell.ch = (uint8_t) * text;
         twin_set_cell(twin, twin->cursor.row, col, cell);
     }
     twin->cursor.column = col;
@@ -181,7 +181,7 @@ TwindowPtr twin_hline(TwindowPtr twin, int row, int column, int size)
         }
         else
         {
-            new_cell.ch = (uint8_t) ch;          /* replace with line graphic */
+            new_cell.ch = (uint8_t) ch; /* replace with line graphic */
         }
         twin_set_cell(twin, row, c, new_cell);
     }
@@ -245,7 +245,7 @@ TwindowPtr twin_vline(TwindowPtr twin, int row, int column, int size)
         }
         else
         {
-            new_cell.ch = (uint8_t) ch;          /* replace with line graphic */
+            new_cell.ch = (uint8_t) ch; /* replace with line graphic */
         }
         debug("%s(@%d): 0x%hhx+0x%hhx -> 0x%hhx",
               __func__, r, cell.ch, ch, new_cell.ch);
@@ -288,17 +288,18 @@ TwindowPtr twin_clear(TwindowPtr twin)
 
 TwindowPtr twin_compose(TwindowPtr dst, TwindowPtr src, TwinCoordinate offset)
 {
-    if ((src->state & TwinDamaged) && src != dst) /* catch tx->root */
+    if ((src->state & TwinDamaged) && src != dst)   /* catch tx->root */
     {
         for (int r = src->damage.min.row; r <= src->damage.max.row; ++r)
         {
-            for (int c = src->damage.min.column; c <= src->damage.max.column; ++c)
-            {                           /* overwrite damaged/changed cells */
-                twin_set_cell(
-                    dst,
-                    r + src->geometry.position.row + offset.row,
-                    c + src->geometry.position.column + offset.column,
-                    src->frame[twin_cell(src->geometry, r, c)]);
+            for (int c = src->damage.min.column; c <= src->damage.max.column;
+                 ++c)
+            {                          /* overwrite damaged/changed cells */
+                twin_set_cell(dst,
+                              r + src->geometry.position.row + offset.row,
+                              c + src->geometry.position.column +
+                              offset.column,
+                              src->frame[twin_cell(src->geometry, r, c)]);
             }
         }
     }
@@ -306,10 +307,8 @@ TwindowPtr twin_compose(TwindowPtr dst, TwindowPtr src, TwinCoordinate offset)
     offset.row += src->geometry.position.row;
     offset.column += src->geometry.position.column;
 
-    for (TwindowPtr child = src->child;
-         child != NULL;
-         child = child->sibling)
-    {                                   /* recursively compose children */
+    for (TwindowPtr child = src->child; child != NULL; child = child->sibling)
+    {                                  /* recursively compose children */
         twin_compose(dst, child, offset);
     }
     return dst;

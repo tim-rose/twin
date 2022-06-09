@@ -54,7 +54,7 @@ extern "C"
     {
         int input;
         FILE *output;
-        Twindow screen;            /* frame */
+        Twindow screen;                /* frame */
         Twindow root;
         TwindowPtr focus;
     } Xterminator, *XterminatorPtr;

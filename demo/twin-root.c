@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
@@ -26,16 +27,19 @@ static void xterminate(void)
     }
 }
 
+
 static void exit_gracefully(int signal)
 {
     xterminate();
     exit(0);
 }
 
+
 static void ack_resize(int signal)
 {
     resize_signal = 1;
 }
+
 
 static void resize_root(XterminatorPtr xt)
 {
@@ -45,7 +49,6 @@ static void resize_root(XterminatorPtr xt)
 
     /* root.geometry.size.row = size.ws_row; */
     /* root.geometry.size.column = size.ws_col; */
-
     /* TODO: resize root structure! */
 }
 
@@ -125,6 +128,7 @@ static void style_box(TwindowPtr tw, int row, int column)
     tw->style.attr = TwinNormal;
 }
 
+
 static void sampler_box(TwindowPtr tw, int row, int column)
 {
     twin_box(tw, row, column, 4, 63);
@@ -183,40 +187,45 @@ static void colour_box(TwindowPtr tw, int row, int column)
     xt_sync(xterminator);
 }
 
+
 static void clip_boxes(TwindowPtr tw)
 {
     twin_box(tw, -1, -1, 3, 3);
     usleep(500000);
     xt_sync(xterminator);
 
-    twin_box(tw, -1, tw->geometry.size.column/2, 3, 3);
+    twin_box(tw, -1, tw->geometry.size.column / 2, 3, 3);
     usleep(500000);
     xt_sync(xterminator);
 
-    twin_box(tw, -1, tw->geometry.size.column-2, 3, 3);
+    twin_box(tw, -1, tw->geometry.size.column - 2, 3, 3);
     usleep(500000);
     xt_sync(xterminator);
 
-    twin_box(tw, tw->geometry.size.row/2, -1, 3, 3);
+    twin_box(tw, tw->geometry.size.row / 2, -1, 3, 3);
     usleep(500000);
     xt_sync(xterminator);
 
-    twin_box(tw, tw->geometry.size.row/2, tw->geometry.size.column-2, 3, 3);
+    twin_box(tw, tw->geometry.size.row / 2, tw->geometry.size.column - 2, 3,
+             3);
     usleep(500000);
     xt_sync(xterminator);
 
-    twin_box(tw, tw->geometry.size.row-2, -1, 3, 3);
+    twin_box(tw, tw->geometry.size.row - 2, -1, 3, 3);
     usleep(500000);
     xt_sync(xterminator);
 
-    twin_box(tw, tw->geometry.size.row-2, tw->geometry.size.column/2, 3, 3);
+    twin_box(tw, tw->geometry.size.row - 2, tw->geometry.size.column / 2, 3,
+             3);
     usleep(500000);
     xt_sync(xterminator);
 
-    twin_box(tw, tw->geometry.size.row-2, tw->geometry.size.column-2, 3, 3);
+    twin_box(tw, tw->geometry.size.row - 2, tw->geometry.size.column - 2, 3,
+             3);
     usleep(500000);
     xt_sync(xterminator);
 }
+
 
 static void boxes(TwindowPtr tw)
 {

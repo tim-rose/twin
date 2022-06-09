@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     twin_cursor(root, 0, 1);
     twin_puts(root, "hello world"); /* print some text */
     xt_sync(xterminator);           /* ...now update the screen */
-	sleep(10);
+    sleep(10);
 
     close_xterminator(xterminator); /* reset the terminal device */
     free_xterminator(xterminator);

@@ -30,8 +30,8 @@
 #define ESC "\033"
 #endif /* DEBUG_TTY */
 
-static const char xt_init_cmd[] =       /* initialisation commands... */
-    ESC "[!p"                 /* soft reset */
+static const char xt_init_cmd[] =      /* initialisation commands... */
+    ESC "[!p"                          /* soft reset */
     ESC "[?3;4l"                       /* normal-width, jump scroll */
     ESC "[4l"                          /* replace mode */
     ESC ">"                            /* "normal" keypad */
@@ -77,8 +77,7 @@ XterminatorPtr xterminator_init(XterminatorPtr xt, int input, FILE * output)
     {
         log_sys(LOG_ERR, "cannot get window size");
     }
-    debug("%s(): size: %d rows, %d cols", __func__, size.ws_row,
-         size.ws_col);
+    debug("%s(): size: %d rows, %d cols", __func__, size.ws_row, size.ws_col);
 
     memset(xt, 0, sizeof(*xt));
     xt->input = input;
@@ -139,7 +138,7 @@ int xt_sync(XterminatorPtr xt)
 
     if (!(xt->root.state & TwinDamaged))
     {
-        return change;                  /* nothing is damaged */
+        return change;                 /* nothing is damaged */
     }
 
     for (int r = xt->root.damage.min.row; r <= xt->root.damage.max.row; ++r)
@@ -150,7 +149,8 @@ int xt_sync(XterminatorPtr xt)
             int offset = twin_cell(xt->root.geometry, r, c);
             TwinCell cell = xt->root.frame[offset];
 
-            if (memcmp(&cell, &xt->screen.frame[offset], sizeof(TwinCell)) == 0)
+            if (memcmp(&cell, &xt->screen.frame[offset], sizeof(TwinCell)) ==
+                0)
             {
                 continue;
             }
@@ -171,7 +171,7 @@ int xt_sync(XterminatorPtr xt)
             ++change;
 #ifdef DEBUG_TTY
             fputc('\n', xt->output);
-#endif  /* DEBUG_TTY */
+#endif /* DEBUG_TTY */
         }
     }
     fflush(xt->output);
@@ -193,7 +193,7 @@ static int xt_style(XterminatorPtr xt, TwinCell style)
             fputs((style.attr & TwinAlt) ? SO : SI, xt->output);
             change = 1;
         }
-        screen_style.attr &= ~TwinAlt;   /* clear ACS differences */
+        screen_style.attr &= ~TwinAlt; /* clear ACS differences */
         style.attr &= ~TwinAlt;
 
         if (screen_style.attr != style.attr)
@@ -207,7 +207,7 @@ static int xt_style(XterminatorPtr xt, TwinCell style)
                 }
             }
             fputc('m', xt->output);
-            screen_style.fg = TWIN_DEFAULT_COLOUR; /* mode changes reset fg, bg */
+            screen_style.fg = TWIN_DEFAULT_COLOUR;  /* mode changes reset fg, bg */
             screen_style.bg = TWIN_DEFAULT_COLOUR;
             change = 1;
         }
@@ -274,7 +274,7 @@ void free_xterminator(XterminatorPtr xt)
 
 void xt_mainloop(XterminatorPtr xt)
 {
-    static const TwinCoordinate no_offset = {0, 0};
+    static const TwinCoordinate no_offset = { 0, 0 };
 
     for (;;)
     {

@@ -75,7 +75,7 @@ extern "C"
     {
         const char *name;
         TwinGeometry geometry;
-        TwinDamage damage;           /* if .state & TwinDamage */
+        TwinDamage damage;             /* if .state & TwinDamage */
         TwinCoordinate cursor;
         TwinCell style;
         int state;                     /* TwinState */
@@ -114,7 +114,8 @@ extern "C"
                         int n_rows, int n_columns);
     TwindowPtr twin_hline(TwindowPtr twin, int row, int column, int size);
     TwindowPtr twin_vline(TwindowPtr twin, int row, int column, int size);
-    TwindowPtr twin_compose(TwindowPtr dst, TwindowPtr src, TwinCoordinate offset);
+    TwindowPtr twin_compose(TwindowPtr dst, TwindowPtr src,
+                            TwinCoordinate offset);
 #ifdef __cplusplus
 }
 #endif /* C++ */
