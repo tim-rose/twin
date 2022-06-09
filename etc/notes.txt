@@ -1,0 +1,62 @@
+# Twin Implementation Notes
+
+
+## Terminal
+
+### Output
+
+#### Fundamental cursor/terminal operations:
+
+* initialise/restore terminal
+  * DECSTR: soft terminal reset "\033[!p"
+  * DECCOLM, DECSCLM: 80 columns, jump scroll "\033[?3;4l"
+  * IRM: replace mode "\033[4l"
+  * DECPNM: normal keypad "\033>"
+  * "\033[?69l";
+* save/restore screen "\033[?1049h", "\033[?1049l"
+
+* DECSC, DECRC: save/restore cursor? "\0337", "\0338"
+* visible/invisible cursor: "\033[?12;25h", "\033[?25l"
+* CUP: move cursor absolute "\033[r;cH" (+"\033[r;cf"?)
+* move cursor relative:
+  * CUU: up "\033[nA"
+  * CUD: down "\033[nB"
+  * CUF: right "\033[nC"
+  * CUB: left "\033[nD"
+* ED: clear screen "\033[nJ" (n: 0: below*, 1: above, 2: all)
+* EL: clear line "\033[nK" (n: 0: to-right*; 1: to-left, 2: all)
+* SGR: set attributes: "\033[nm", clear attributes: "\033[2nm":
+  * 0: normal
+  * 1: bold
+  * 2: dim
+  * 3: italics
+  * 4: underscore
+  * 5: blink
+  * 7: inverse
+* set foreground/background colour "\033[nm" (attr.-like)
+  * 16-bit colour: fg, bg:
+    * black: 30, 40
+    * red: 31, 41
+    * green: 32, 42
+    * yellow: 33, 43
+    * blue: 34, 44
+    * magenta: 35, 45
+    * cyan: 36, 46
+    * white: 37, 47
+    * default: 39, 49
+ * 32-bit colours: "\033[38;5nm"
+* select alternate charset ("\033)0", ^N, ^O)
+* set mode (bold, blink etc.)
+
+
+### Input
+
+* resize
+* ioctl
+
+## Frame Buffer
+
+## Window
+
+
+## Animations!
