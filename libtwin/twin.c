@@ -20,15 +20,15 @@ static TwinCell blank = {
     TWIN_DEFAULT_COLOUR, TWIN_DEFAULT_COLOUR, TwinNormal, ' '
 };
 
-TwindowPtr twin_alloc(void)
+Twindow *twin_alloc(void)
 {
     return malloc(sizeof(Twindow));
 }
 
 
-TwindowPtr twin_init(TwindowPtr twin, const char *name, TwindowPtr parent,
-                     int row, int column, int height, int width,
-                     TwinCellPtr frame)
+Twindow *twin_init(Twindow * twin, const char *name, Twindow * parent,
+                   int row, int column, int height, int width,
+                   TwinCell * frame)
 {
     debug("%s(%s)", __func__, name ? name : "unk");
     memset(twin, 0, sizeof(*twin));    /* nulls linkage pointers */
@@ -45,7 +45,7 @@ TwindowPtr twin_init(TwindowPtr twin, const char *name, TwindowPtr parent,
 }
 
 
-void free_twin(TwindowPtr twin)
+void free_twin(Twindow * twin)
 {
     if (twin->frame)
     {
@@ -55,7 +55,7 @@ void free_twin(TwindowPtr twin)
 }
 
 
-void twin_reset(TwindowPtr twin)
+void twin_reset(Twindow * twin)
 {
     twin->damage.min.row = twin->geometry.size.row;
     twin->damage.min.column = twin->geometry.size.column;
@@ -65,7 +65,7 @@ void twin_reset(TwindowPtr twin)
 }
 
 
-TwindowPtr twin_cursor(TwindowPtr twin, int row, int column)
+Twindow *twin_cursor(Twindow * twin, int row, int column)
 {
     twin->cursor.row = row;
     twin->cursor.column = column;
@@ -73,7 +73,7 @@ TwindowPtr twin_cursor(TwindowPtr twin, int row, int column)
 }
 
 
-int twin_set_cell(TwindowPtr twin, int row, int col, TwinCell cell)
+int twin_set_cell(Twindow * twin, int row, int col, TwinCell cell)
 {
     if (row < 0 || row > twin->geometry.size.row
         || col < 0 || col > twin->geometry.size.column)
@@ -108,7 +108,7 @@ int twin_set_cell(TwindowPtr twin, int row, int col, TwinCell cell)
 }
 
 
-TwindowPtr twin_puts(TwindowPtr twin, const char *text)
+Twindow *twin_puts(Twindow * twin, const char *text)
 {
     int col;
     TwinCell cell = twin->style;
@@ -126,7 +126,7 @@ TwindowPtr twin_puts(TwindowPtr twin, const char *text)
     return twin;
 }
 
-TwindowPtr twin_hline(TwindowPtr twin, int row, int column, int size)
+Twindow *twin_hline(Twindow * twin, int row, int column, int size)
 {
     int c;
     int start = column;
@@ -189,7 +189,7 @@ TwindowPtr twin_hline(TwindowPtr twin, int row, int column, int size)
 }
 
 
-TwindowPtr twin_vline(TwindowPtr twin, int row, int column, int size)
+Twindow *twin_vline(Twindow * twin, int row, int column, int size)
 {
     int r;
     int start = row;
@@ -255,8 +255,8 @@ TwindowPtr twin_vline(TwindowPtr twin, int row, int column, int size)
     return twin;
 }
 
-TwindowPtr twin_box(TwindowPtr tw, int row, int column,
-                    int n_rows, int n_columns)
+Twindow *twin_box(Twindow * tw, int row, int column,
+                  int n_rows, int n_columns)
 {
     twin_hline(tw, row, column, n_columns);
     twin_vline(tw, row, column + n_columns - 1, n_rows);
@@ -266,7 +266,7 @@ TwindowPtr twin_box(TwindowPtr tw, int row, int column,
 }
 
 
-TwindowPtr twin_printf(TwindowPtr twin, const char *format, ...)
+Twindow *twin_printf(Twindow * twin, const char *format, ...)
 {
     char text[twin->geometry.size.column];
 
@@ -274,9 +274,9 @@ TwindowPtr twin_printf(TwindowPtr twin, const char *format, ...)
     return NULL;
 }
 
-TwindowPtr twin_clear(TwindowPtr twin)
+Twindow *twin_clear(Twindow * twin)
 {
-    TwinCellPtr cell = twin->frame;
+    TwinCell *cell = twin->frame;
 
     for (int i = 0;
          i < twin->geometry.size.row * twin->geometry.size.column; ++i)
@@ -286,7 +286,7 @@ TwindowPtr twin_clear(TwindowPtr twin)
     return twin;
 }
 
-TwindowPtr twin_compose(TwindowPtr dst, TwindowPtr src, TwinCoordinate offset)
+Twindow *twin_compose(Twindow * dst, Twindow * src, TwinCoordinate offset)
 {
     if ((src->state & TwinDamaged) && src != dst)   /* catch tx->root */
     {
@@ -307,7 +307,7 @@ TwindowPtr twin_compose(TwindowPtr dst, TwindowPtr src, TwinCoordinate offset)
     offset.row += src->geometry.position.row;
     offset.column += src->geometry.position.column;
 
-    for (TwindowPtr child = src->child; child != NULL; child = child->sibling)
+    for (Twindow * child = src->child; child != NULL; child = child->sibling)
     {                                  /* recursively compose children */
         twin_compose(dst, child, offset);
     }

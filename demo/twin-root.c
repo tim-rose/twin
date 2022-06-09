@@ -9,13 +9,13 @@
 #include <xterminator.h>
 
 static int resize_signal;
-static XterminatorPtr xterminator;
+static Xterminator *xterminator;
 
-static void style_box(TwindowPtr tw, int row, int column);
-static void sampler_box(TwindowPtr tw, int row, int column);
-static void colour_box(TwindowPtr tw, int row, int column);
-static void clip_boxes(TwindowPtr tw);
-static void boxes(TwindowPtr tw);
+static void style_box(Twindow * tw, int row, int column);
+static void sampler_box(Twindow * tw, int row, int column);
+static void colour_box(Twindow * tw, int row, int column);
+static void clip_boxes(Twindow * tw);
+static void boxes(Twindow * tw);
 
 static void xterminate(void)
 {
@@ -28,7 +28,7 @@ static void xterminate(void)
 }
 
 
-static void exit_gracefully(int signal)
+static void exit_gracefully(int UNUSED(signal))
 {
     xterminate();
     exit(0);
@@ -41,7 +41,7 @@ static void ack_resize(int signal)
 }
 
 
-static void resize_root(XterminatorPtr xt)
+static void resize_root(Xterminator * xt)
 {
     struct winsize size;
 
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     atexit(exit_gracefully);
 
     xterminator = new_xterminator(0, output);
-    TwindowPtr root = &xterminator->root;
+    Twindow *root = &xterminator->root;
 
     open_xterminator(xterminator);
 
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void style_box(TwindowPtr tw, int row, int column)
+static void style_box(Twindow * tw, int row, int column)
 {
     tw->style.fg = 2;
     twin_box(tw, row, column, 9, 12);
@@ -127,7 +127,7 @@ static void style_box(TwindowPtr tw, int row, int column)
 }
 
 
-static void sampler_box(TwindowPtr tw, int row, int column)
+static void sampler_box(Twindow * tw, int row, int column)
 {
     tw->style.fg = 3;
     twin_box(tw, row, column, 4, 63);
@@ -162,7 +162,7 @@ static void sampler_box(TwindowPtr tw, int row, int column)
 }
 
 
-static void colour_box(TwindowPtr tw, int row, int column)
+static void colour_box(Twindow * tw, int row, int column)
 {
     tw->style.fg = 6;
     twin_box(tw, row, column, 8, 14);
@@ -192,7 +192,7 @@ static void colour_box(TwindowPtr tw, int row, int column)
 }
 
 
-static void clip_boxes(TwindowPtr tw)
+static void clip_boxes(Twindow * tw)
 {
     twin_box(tw, -1, -1, 3, 3);
     usleep(500000);
@@ -232,7 +232,7 @@ static void clip_boxes(TwindowPtr tw)
 }
 
 
-static void boxes(TwindowPtr tw)
+static void boxes(Twindow * tw)
 {
     clip_boxes(tw);
     for (int i = 0; i < 300; ++i)

@@ -49,28 +49,27 @@ extern "C"
         uint8_t fg, bg;                /* colours */
         uint8_t attr;                  /* TwinCellAttribute */
         uint8_t ch;                    /* codepoint, or line-graphics bits */
-    } TwinCell, *TwinCellPtr;
+    } TwinCell;
 
     typedef struct TwinCoordinate_t
     {
         int row, column;
-    } TwinCoordinate, *TwinCoordinatePtr;
+    } TwinCoordinate;
 
     typedef struct TwinGeometry_t
     {
         TwinCoordinate position, size;
-    } TwinGeometry, *TwinGeometryPtr;
+    } TwinGeometry;
 
     typedef struct TwinDamage_t
     {
         TwinCoordinate min, max;
-    } TwinDamage, *TwinDamagePtr;
+    } TwinDamage;
 
-    struct Twindow;
 
-    typedef int (*TwinProc)(struct Twindow * twin, TwinEvent event,
+    struct Twindow_t;
+    typedef int (*TwinProc)(struct Twindow_t * twin, TwinEvent event,
                             void *arg);
-
     typedef struct Twindow_t
     {
         const char *name;
@@ -79,43 +78,43 @@ extern "C"
         TwinCoordinate cursor;
         TwinCell style;
         int state;                     /* TwinState */
-        TwinCellPtr frame;             /* base: array of cells */
+        TwinCell *frame;               /* base: array of cells */
         struct Twindow_t *parent;
-        struct Twindow *child;
-        struct Twindow *sibling;
-    } Twindow, *TwindowPtr;
+        struct Twindow_t *child;
+        struct Twindow_t *sibling;
+    } Twindow;
 
     inline int twin_cell(TwinGeometry geometry, int row, int column)
     {
         return row * geometry.size.column + column;
     }
 
-    TwindowPtr twin_alloc(void);
-    void free_twin(TwindowPtr twin);
+    Twindow *twin_alloc(void);
+    void free_twin(Twindow * twin);
 
-    TwindowPtr twin_init(TwindowPtr twin, const char *name, TwindowPtr parent,
-                         int row, int column, int height, int width,
-                         TwinCellPtr frame);
+    Twindow *twin_init(Twindow * twin, const char *name, Twindow * parent,
+                       int row, int column, int height, int width,
+                       TwinCell * frame);
 
 #define new_twin(name, parent, row, column, n_rows, n_columns, frame) \
     twin_init(twin_alloc(), name, parent, row, column, n_rows, n_columns, frame)
 #define init_twin(twin, name, parent, row, column, frame)                \
         twin_init(twin, name, parent, rows, columns, NEL(frame), NEL(frame[0]), frame)
 
-    void twin_reset(TwindowPtr twin);
-    TwindowPtr twin_cursor(TwindowPtr twin, int row, int column);
-    TwindowPtr twin_attr(TwindowPtr twin, TwinCell attr);
-    int twin_set_cell(TwindowPtr twin, int row, int col, TwinCell cell);
-    TwindowPtr twin_puts(TwindowPtr twin, const char *text);
-    TwindowPtr twin_printf(TwindowPtr twin, const char *format,
-                           ...) PRINTF_ATTRIBUTE(2, 3);
-    TwindowPtr twin_clear(TwindowPtr twin);
-    TwindowPtr twin_box(TwindowPtr tw, int row, int column,
-                        int n_rows, int n_columns);
-    TwindowPtr twin_hline(TwindowPtr twin, int row, int column, int size);
-    TwindowPtr twin_vline(TwindowPtr twin, int row, int column, int size);
-    TwindowPtr twin_compose(TwindowPtr dst, TwindowPtr src,
-                            TwinCoordinate offset);
+    void twin_reset(Twindow * twin);
+    Twindow *twin_cursor(Twindow * twin, int row, int column);
+    Twindow *twin_attr(Twindow * twin, TwinCell attr);
+    int twin_set_cell(Twindow * twin, int row, int col, TwinCell cell);
+    Twindow *twin_puts(Twindow * twin, const char *text);
+    Twindow *twin_printf(Twindow * twin, const char *format,
+                         ...) PRINTF_ATTRIBUTE(2, 3);
+    Twindow *twin_clear(Twindow * twin);
+    Twindow *twin_box(Twindow * tw, int row, int column,
+                      int n_rows, int n_columns);
+    Twindow *twin_hline(Twindow * twin, int row, int column, int size);
+    Twindow *twin_vline(Twindow * twin, int row, int column, int size);
+    Twindow *twin_compose(Twindow * dst, Twindow * src,
+                          TwinCoordinate offset);
 #ifdef __cplusplus
 }
 #endif /* C++ */

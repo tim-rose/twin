@@ -21,26 +21,26 @@ extern "C"
     {
         int input;
         FILE *output;
-        TwinCellPtr screen;            /* frame */
-        TwindowPtr root;
-        TwinDamagePtr damage;
-        TwindowPtr focus;
+        TwinCell* screen;            /* frame */
+        Twindow* root;
+        TwinDamage* damage;
+        Twindow* focus;
     } Xterminator, *XterminatorPtr;
 
 
-    XterminatorPtr new_xterminator(int input, FILE *output);
-    void free_twin_dev(XterminatorPtr xt);
+    Xterminator* new_xterminator(int input, FILE *output);
+    void free_twin_dev(Xterminator* xt);
 
-    XterminatorPtr xterminator_init(
-        XterminatorPtr xt,
+    Xterminator* xterminator_init(
+        Xterminator* xt,
         int input, FILE *output,
-        TwinCellPtr screen, TwindowPtr root, TwinDamagePtr damage);
+        TwinCell* screen, TwindowPtr root, TwinDamagePtr damage);
 
 
-    void close_xterminator(XterminatorPtr xt);
+    void close_xterminator(Xterminator* xt);
 
-    void resize_xterminator(XterminatorPtr xt);
-    XterminatorPtr sync_xterminator(XterminatorPtr xt);
+    void resize_xterminator(Xterminator* xt);
+    Xterminator* sync_xterminator(XterminatorPtr xt);
 #ifdef __cplusplus
 }
 #endif                                 /* C++ */

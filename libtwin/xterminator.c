@@ -48,12 +48,12 @@ static const char xt_bg_8_cmd[] = ESC "[4%dm";
 static const char xt_bg_256_cmd[] = ESC "[48;5;%dm";
 
 
-static int xt_style(XterminatorPtr xt, TwinCell style);
-static void xt_cursor(XterminatorPtr xt, int row, int column);
+static int xt_style(Xterminator * xt, TwinCell style);
+static void xt_cursor(Xterminator * xt, int row, int column);
 
-XterminatorPtr new_xterminator(int input, FILE * output)
+Xterminator *new_xterminator(int input, FILE * output)
 {
-    XterminatorPtr xt =
+    Xterminator *xt =
         xterminator_init(malloc(sizeof(Xterminator)), input, output);
 
     return xt;
@@ -69,7 +69,7 @@ XterminatorPtr new_xterminator(int input, FILE * output)
  * Returns: (XterminatorPtr)
  * Success: an initialised Xterminator; Failure: NULL.
  */
-XterminatorPtr xterminator_init(XterminatorPtr xt, int input, FILE * output)
+Xterminator *xterminator_init(Xterminator * xt, int input, FILE * output)
 {
     struct winsize size;
 
@@ -93,7 +93,7 @@ XterminatorPtr xterminator_init(XterminatorPtr xt, int input, FILE * output)
     return xt;                         /* success */
 }
 
-void open_xterminator(XterminatorPtr xt)
+void open_xterminator(Xterminator * xt)
 {
     fputs(xt_init_cmd, xt->output);
     fflush(xt->output);
@@ -107,7 +107,7 @@ void open_xterminator(XterminatorPtr xt)
  * This routine outputs some cleanup capabilities to the terminal
  * device.
  */
-void close_xterminator(XterminatorPtr xt)
+void close_xterminator(Xterminator * xt)
 {
     TwinCell no_style = { 0 };
 
@@ -122,7 +122,7 @@ void close_xterminator(XterminatorPtr xt)
  * Returns: (int)
  * The number of changes.
  */
-int xt_sync(XterminatorPtr xt)
+int xt_sync(Xterminator * xt)
 {
     int change = 0;
 
@@ -180,7 +180,7 @@ int xt_sync(XterminatorPtr xt)
     return change;
 }
 
-static int xt_style(XterminatorPtr xt, TwinCell style)
+static int xt_style(Xterminator * xt, TwinCell style)
 {
     int change = 0;
     TwinCell screen_style = xt->screen.style;
@@ -240,7 +240,7 @@ static int xt_style(XterminatorPtr xt, TwinCell style)
     return change;
 }
 
-static void xt_cursor(XterminatorPtr xt, int row, int column)
+static void xt_cursor(Xterminator * xt, int row, int column)
 {
     if (xt->screen.cursor.row == row && xt->screen.cursor.column == column)
     {
@@ -258,7 +258,7 @@ static void xt_cursor(XterminatorPtr xt, int row, int column)
 /*
  * free_xterminator() --Release any resources used by a Xterminator.
  */
-void free_xterminator(XterminatorPtr xt)
+void free_xterminator(Xterminator * xt)
 {
     if (xt->screen.frame != NULL)
     {
@@ -272,7 +272,7 @@ void free_xterminator(XterminatorPtr xt)
     free(xt);
 }
 
-void xt_mainloop(XterminatorPtr xt)
+void xt_mainloop(Xterminator * xt)
 {
     static const TwinCoordinate no_offset = { 0, 0 };
 

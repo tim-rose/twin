@@ -56,21 +56,20 @@ extern "C"
         FILE *output;
         Twindow screen;                /* frame */
         Twindow root;
-        TwindowPtr focus;
-    } Xterminator, *XterminatorPtr;
+        Twindow *focus;
+    } Xterminator;
 
-    XterminatorPtr new_xterminator(int input, FILE * output);
-    XterminatorPtr xterminator_init(XterminatorPtr xt,
-                                    int input, FILE * output);
-    void free_xterminator(XterminatorPtr xt);
+    Xterminator *new_xterminator(int input, FILE * output);
+    Xterminator *xterminator_init(Xterminator * xt, int input, FILE * output);
+    void free_xterminator(Xterminator * xt);
 
-    void open_xterminator(XterminatorPtr xt);
-    void close_xterminator(XterminatorPtr xt);
+    void open_xterminator(Xterminator * xt);
+    void close_xterminator(Xterminator * xt);
 
-    void resize_xterminator(XterminatorPtr xt);
-    TwinCell xt_cell(XterminatorPtr xt, int row, int col, TwinCell cell);
-    int xt_sync(XterminatorPtr xt);
-    int xt_clear(XterminatorPtr xt);
+    void resize_xterminator(Xterminator * xt);
+    TwinCell xt_cell(Xterminator * xt, int row, int col, TwinCell cell);
+    int xt_sync(Xterminator * xt);
+    int xt_clear(Xterminator * xt);
 #ifdef __cplusplus
 }
 #endif                                 /* C++ */
