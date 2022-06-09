@@ -6,3 +6,6 @@ C_SRC = twin.c xterminator.c
 H_SRC = twin.h xterminator.h
 
 include makeshift.mk library.mk
+
+install: install-lib
+uninstall: uninstall-lib
