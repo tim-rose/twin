@@ -82,11 +82,8 @@ int main(int argc, char *argv[])
     xt_sync(xterminator);
 
     style_box(root, 3, 5);
-    sleep(1);
     sampler_box(root, 15, 2);
-    sleep(1);
     colour_box(root, 3, 30);
-    sleep(1);
     boxes(root);
     sleep(500);
     close_xterminator(xterminator);
@@ -126,12 +123,15 @@ static void style_box(TwindowPtr tw, int row, int column)
     twin_puts(tw, "Reverse");
     xt_sync(xterminator);
     tw->style.attr = TwinNormal;
+    sleep(1);
 }
 
 
 static void sampler_box(TwindowPtr tw, int row, int column)
 {
+    tw->style.fg = 3;
     twin_box(tw, row, column, 4, 63);
+    tw->style.fg = TWIN_DEFAULT_COLOUR;
     twin_cursor(tw, row++, ++column);
     twin_puts(tw, "sampler");
     xt_sync(xterminator);
@@ -158,12 +158,15 @@ static void sampler_box(TwindowPtr tw, int row, int column)
     }
     tw->style.attr = TwinNormal;
     xt_sync(xterminator);
+    sleep(1);
 }
 
 
 static void colour_box(TwindowPtr tw, int row, int column)
 {
+    tw->style.fg = 6;
     twin_box(tw, row, column, 8, 14);
+    tw->style.fg = TWIN_DEFAULT_COLOUR;
     twin_cursor(tw, row++, ++column);
     twin_puts(tw, "colour");
     xt_sync(xterminator);
@@ -185,6 +188,7 @@ static void colour_box(TwindowPtr tw, int row, int column)
     }
     tw->style.bg = TWIN_DEFAULT_COLOUR;
     xt_sync(xterminator);
+    sleep(1);
 }
 
 
@@ -224,6 +228,7 @@ static void clip_boxes(TwindowPtr tw)
              3);
     usleep(500000);
     xt_sync(xterminator);
+    sleep(1);
 }
 
 
