@@ -1,6 +1,8 @@
-
-#include <stdio.h>
+/*
+ * TWIN-ROOT.C --Demo program that draws on the main root window only.
+ */
 #include <unistd.h>
+#include <stdio.h>
 #include <signal.h>
 #include <sys/ioctl.h>
 
@@ -71,7 +73,7 @@ int main(int argc, char *argv[])
     signal(SIGQUIT, exit_gracefully);
     atexit(exit_gracefully);
 
-    xterminator = new_xterminator(0, output);
+    xterminator = new_xterminator(STDIN_FILENO, output);
     Twindow *root = &xterminator->root;
 
     open_xterminator(xterminator);
@@ -79,14 +81,14 @@ int main(int argc, char *argv[])
     twin_box(root, 0, 0, root->geometry.size.row, root->geometry.size.column);
     twin_cursor(root, 0, 1);
     twin_puts(root, "twin-root");
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
 
     style_box(root, 3, 5);
     sampler_box(root, 15, 2);
     colour_box(root, 3, 30);
     boxes(root);
     sleep(500);
-    close_xterminator(xterminator);
+    exit(0);
 }
 
 
@@ -98,7 +100,7 @@ static void style_box(Twindow * tw, int row, int column)
     tw->style.attr = TwinNormal;
     twin_cursor(tw, row, ++column);
     twin_puts(tw, "styles");
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
     usleep(500000);
 
     twin_cursor(tw, ++row, column);
@@ -121,7 +123,7 @@ static void style_box(Twindow * tw, int row, int column)
     tw->style.attr = TwinReverse;
     twin_cursor(tw, ++row, column);
     twin_puts(tw, "Reverse");
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
     tw->style.attr = TwinNormal;
     sleep(1);
 }
@@ -134,7 +136,7 @@ static void sampler_box(Twindow * tw, int row, int column)
     tw->style.fg = TWIN_DEFAULT_COLOUR;
     twin_cursor(tw, row++, ++column);
     twin_puts(tw, "sampler");
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
     usleep(500000);
     for (int i = 0; i < 32; ++i)
     {
@@ -143,7 +145,7 @@ static void sampler_box(Twindow * tw, int row, int column)
         twin_cursor(tw, row, column + i * 2);
         twin_puts(tw, str);
     }
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
     usleep(500000);
     ++row;
     tw->style.attr = TwinAlt;
@@ -153,11 +155,11 @@ static void sampler_box(Twindow * tw, int row, int column)
 
         twin_cursor(tw, row, column + i * 2);
         twin_puts(tw, str);
-        xt_sync(xterminator);
+        xterm_sync(xterminator);
         usleep(50000);
     }
     tw->style.attr = TwinNormal;
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
     sleep(1);
 }
 
@@ -169,10 +171,10 @@ static void colour_box(Twindow * tw, int row, int column)
     tw->style.fg = TWIN_DEFAULT_COLOUR;
     twin_cursor(tw, row++, ++column);
     twin_puts(tw, "colour");
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
     usleep(500000);
 
-    for (int i = 16; i < 255; i += 36)
+    for (int i = 16; i < 255 - 36; i += 36)
     {
         for (int r = 0; r < 6; ++r)
         {
@@ -183,11 +185,11 @@ static void colour_box(Twindow * tw, int row, int column)
                 twin_puts(tw, "  ");
             }
         }
-        xt_sync(xterminator);
+        xterm_sync(xterminator);
         usleep(500000);
     }
     tw->style.bg = TWIN_DEFAULT_COLOUR;
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
     sleep(1);
 }
 
@@ -196,38 +198,38 @@ static void clip_boxes(Twindow * tw)
 {
     twin_box(tw, -1, -1, 3, 3);
     usleep(500000);
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
 
     twin_box(tw, -1, tw->geometry.size.column / 2, 3, 3);
     usleep(500000);
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
 
     twin_box(tw, -1, tw->geometry.size.column - 2, 3, 3);
     usleep(500000);
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
 
     twin_box(tw, tw->geometry.size.row / 2, -1, 3, 3);
     usleep(500000);
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
 
     twin_box(tw, tw->geometry.size.row / 2, tw->geometry.size.column - 2, 3,
              3);
     usleep(500000);
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
 
     twin_box(tw, tw->geometry.size.row - 2, -1, 3, 3);
     usleep(500000);
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
 
     twin_box(tw, tw->geometry.size.row - 2, tw->geometry.size.column / 2, 3,
              3);
     usleep(500000);
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
 
     twin_box(tw, tw->geometry.size.row - 2, tw->geometry.size.column - 2, 3,
              3);
     usleep(500000);
-    xt_sync(xterminator);
+    xterm_sync(xterminator);
     sleep(1);
 }
 
@@ -241,7 +243,7 @@ static void boxes(Twindow * tw)
                  rand() % (tw->geometry.size.row - 3),
                  rand() % (tw->geometry.size.column - 8),
                  rand() % 4 + 2, rand() % 8 + 2);
-        xt_sync(xterminator);
+        xterm_sync(xterminator);
         usleep(50000);
     }
 }

@@ -7,7 +7,7 @@
  */
 #include <log.h>
 #include <estring.h>
-#include <twin.h>
+#include "twin.h"
 
 extern inline int twin_cell(TwinGeometry geometry, int row, int column);
 
@@ -26,13 +26,11 @@ Twindow *twin_alloc(void)
 }
 
 
-Twindow *twin_init(Twindow * twin, const char *name, Twindow * parent,
+Twindow *twin_init(Twindow * twin, Twindow * parent,
                    int row, int column, int height, int width,
                    TwinCell * frame)
 {
-    debug("%s(%s)", __func__, name ? name : "unk");
     memset(twin, 0, sizeof(*twin));    /* nulls linkage pointers */
-    twin->name = name;
     twin->geometry.position.row = row;
     twin->geometry.position.column = column;
     twin->geometry.size.row = height;

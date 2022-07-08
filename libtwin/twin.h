@@ -72,7 +72,6 @@ extern "C"
                             void *arg);
     typedef struct Twindow_t
     {
-        const char *name;
         TwinGeometry geometry;
         TwinRegion damage;             /* if .state & TwinDamage */
         TwinCoordinate cursor;
@@ -92,14 +91,14 @@ extern "C"
     Twindow *twin_alloc(void);
     void free_twin(Twindow * twin);
 
-    Twindow *twin_init(Twindow * twin, const char *name, Twindow * parent,
+    Twindow *twin_init(Twindow * twin, Twindow * parent,
                        int row, int column, int height, int width,
                        TwinCell * frame);
 
-#define new_twin(name, parent, row, column, n_rows, n_columns, frame) \
-    twin_init(twin_alloc(), name, parent, row, column, n_rows, n_columns, frame)
-#define init_twin(twin, name, parent, row, column, frame)                \
-        twin_init(twin, name, parent, rows, columns, NEL(frame), NEL(frame[0]), frame)
+#define new_twin(parent, row, column, n_rows, n_columns, frame) \
+    twin_init(twin_alloc(), parent, row, column, n_rows, n_columns, frame)
+#define init_twin(twin, parent, row, column, frame)                \
+        twin_init(twin, parent, rows, columns, NEL(frame), NEL(frame[0]), frame)
 
     void twin_reset(Twindow * twin);
     Twindow *twin_cursor(Twindow * twin, int row, int column);

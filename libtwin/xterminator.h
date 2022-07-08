@@ -67,9 +67,9 @@ extern "C"
     void close_xterminator(Xterminator * xt);
 
     void resize_xterminator(Xterminator * xt);
-    TwinCell xt_cell(Xterminator * xt, int row, int col, TwinCell cell);
-    int xt_sync(Xterminator * xt);
-    int xt_clear(Xterminator * xt);
+    TwinCell xterm_cell(Xterminator * xt, int row, int col, TwinCell cell);
+    int xterm_sync(Xterminator * xt);
+    int xterm_clear(Xterminator * xt);
 #ifdef __cplusplus
 }
 #endif                                 /* C++ */

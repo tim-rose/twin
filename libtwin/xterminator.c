@@ -4,7 +4,7 @@
  * Contents:
  * xterminator_init()  --Initialise the Xterminator structure.
  * close_xterminator() --Close, release resources, reset terminal.
- * xt_sync()           --Render any changes to the device.
+ * xterm_sync()           --Render any changes to the device.
  * free_xterminator()  --Release any resources used by a Xterminator.
  *
  * Remarks:
@@ -16,16 +16,16 @@
  * Root and screen are compared when updating the actual screen.
  */
 #include <sys/ioctl.h>
-#include <xterminator.h>
 #include <log.h>
 #include <estring.h>
+#include "xterminator.h"
 
 #ifdef DEBUG_TTY
 #define SO "<so>"
 #define SI "<si>"
 #define ESC "<esc>"
 #else
-#define SO "\016"
+#define SO "\016"                       /* TODO: \e(0, \e(B */
 #define SI "\017"
 #define ESC "\033"
 #endif /* DEBUG_TTY */
@@ -48,15 +48,15 @@ static const char xt_bg_8_cmd[] = ESC "[4%dm";
 static const char xt_bg_256_cmd[] = ESC "[48;5;%dm";
 
 
-static int xt_style(Xterminator * xt, TwinCell style);
-static void xt_cursor(Xterminator * xt, int row, int column);
+static int xterm_style(Xterminator * xterm, TwinCell style);
+static void xterm_cursor(Xterminator * xterm, int row, int column);
 
 Xterminator *new_xterminator(int input, FILE * output)
 {
-    Xterminator *xt =
+    Xterminator *xterm =
         xterminator_init(malloc(sizeof(Xterminator)), input, output);
 
-    return xt;
+    return xterm;
 }
 
 
@@ -69,7 +69,7 @@ Xterminator *new_xterminator(int input, FILE * output)
  * Returns: (XterminatorPtr)
  * Success: an initialised Xterminator; Failure: NULL.
  */
-Xterminator *xterminator_init(Xterminator * xt, int input, FILE * output)
+Xterminator *xterminator_init(Xterminator * xterm, int input, FILE * output)
 {
     struct winsize size;
 
@@ -79,24 +79,24 @@ Xterminator *xterminator_init(Xterminator * xt, int input, FILE * output)
     }
     debug("%s(): size: %d rows, %d cols", __func__, size.ws_row, size.ws_col);
 
-    memset(xt, 0, sizeof(*xt));
-    xt->input = input;
-    xt->output = output;
-    setvbuf(xt->output, NULL, _IOFBF, 0);
+    memset(xterm, 0, sizeof(*xterm));
+    xterm->input = input;
+    xterm->output = output;
+    setvbuf(xterm->output, NULL, _IOFBF, 0);
 
-    twin_init(&xt->root,
-              "root", NULL, 0, 0, size.ws_row, size.ws_col,
+    twin_init(&xterm->root,
+              NULL, 0, 0, size.ws_row, size.ws_col,
               malloc(size.ws_row * size.ws_col * sizeof(TwinCell)));
-    twin_init(&xt->screen,
-              "screen", NULL, 0, 0, size.ws_row, size.ws_col,
+    twin_init(&xterm->screen,
+              NULL, 0, 0, size.ws_row, size.ws_col,
               malloc(size.ws_row * size.ws_col * sizeof(TwinCell)));
-    return xt;                         /* success */
+    return xterm;                         /* success */
 }
 
-void open_xterminator(Xterminator * xt)
+void open_xterminator(Xterminator * xterm)
 {
-    fputs(xt_init_cmd, xt->output);
-    fflush(xt->output);
+    fputs(xt_init_cmd, xterm->output);
+    fflush(xterm->output);
 }
 
 
@@ -107,90 +107,90 @@ void open_xterminator(Xterminator * xt)
  * This routine outputs some cleanup capabilities to the terminal
  * device.
  */
-void close_xterminator(Xterminator * xt)
+void close_xterminator(Xterminator * xterm)
 {
     TwinCell no_style = { 0 };
 
-    xt_style(xt, no_style);
-    fputs(xt_end_cmd, xt->output);
+    xterm_style(xterm, no_style);
+    fputs(xt_end_cmd, xterm->output);
 }
 
 
 /*
- * xt_sync() --Render any changes to the device.
+ * xterm_sync() --Render any changes to the device.
  *
  * Returns: (int)
  * The number of changes.
  */
-int xt_sync(Xterminator * xt)
+int xterm_sync(Xterminator * xterm)
 {
     int change = 0;
 
 
     debug("%s(): position: %d, %d. size: %d, %d",
           __func__,
-          xt->root.geometry.position.row, xt->root.geometry.position.column,
-          xt->root.geometry.size.row, xt->root.geometry.size.column);
+          xterm->root.geometry.position.row, xterm->root.geometry.position.column,
+          xterm->root.geometry.size.row, xterm->root.geometry.size.column);
     debug("%s(): damage: min: %d, %d. max: %d, %d",
           __func__,
-          xt->root.damage.min.row, xt->root.damage.min.column,
-          xt->root.damage.max.row, xt->root.damage.max.column);
+          xterm->root.damage.min.row, xterm->root.damage.min.column,
+          xterm->root.damage.max.row, xterm->root.damage.max.column);
 
-    if (!(xt->root.state & TwinRegiond))
+    if (!(xterm->root.state & TwinRegiond))
     {
         return change;                 /* nothing is damaged */
     }
 
-    for (int r = xt->root.damage.min.row; r <= xt->root.damage.max.row; ++r)
+    for (int r = xterm->root.damage.min.row; r <= xterm->root.damage.max.row; ++r)
     {
-        for (int c = xt->root.damage.min.column;
-             c <= xt->root.damage.max.column; ++c)
+        for (int c = xterm->root.damage.min.column;
+             c <= xterm->root.damage.max.column; ++c)
         {                              /* TODO: optimise for trailing space? */
-            int offset = twin_cell(xt->root.geometry, r, c);
-            TwinCell cell = xt->root.frame[offset];
+            int offset = twin_cell(xterm->root.geometry, r, c);
+            TwinCell cell = xterm->root.frame[offset];
 
-            if (memcmp(&cell, &xt->screen.frame[offset], sizeof(TwinCell)) ==
+            if (memcmp(&cell, &xterm->screen.frame[offset], sizeof(TwinCell)) ==
                 0)
             {
                 continue;
             }
-            xt_cursor(xt, r, c);
-            xt_style(xt, cell);
+            xterm_cursor(xterm, r, c);
+            xterm_style(xterm, cell);
 
             if ((cell.attr & TwinAlt) && cell.ch < 16)
             {                          /* line graphic */
-                fputc(xt_line_map[cell.ch], xt->output);
+                fputc(xt_line_map[cell.ch], xterm->output);
             }
             else
             {
-                fputc(cell.ch, xt->output);
+                fputc(cell.ch, xterm->output);
             }
             /* note: raw assignment avoids twin_set_cell()'s damage control */
-            xt->screen.frame[offset] = xt->root.frame[offset];
-            xt->screen.cursor.column += 1;
+            xterm->screen.frame[offset] = xterm->root.frame[offset];
+            xterm->screen.cursor.column += 1;
             ++change;
 #ifdef DEBUG_TTY
-            fputc('\n', xt->output);
+            fputc('\n', xterm->output);
 #endif /* DEBUG_TTY */
         }
     }
-    fflush(xt->output);
-    twin_reset(&xt->root);
+    fflush(xterm->output);
+    twin_reset(&xterm->root);
     debug("%s(): %d changes", __func__, change);
     return change;
 }
 
-static int xt_style(Xterminator * xt, TwinCell style)
+static int xterm_style(Xterminator * xterm, TwinCell style)
 {
     int change = 0;
-    TwinCell screen_style = xt->screen.style;
+    TwinCell screen_style = xterm->screen.style;
 
-    xt->screen.style = style;
+    xterm->screen.style = style;
     if (screen_style.attr != style.attr)
     {                                  /* adjust attributes */
         if ((screen_style.attr & TwinAlt) != (style.attr & TwinAlt))
         {                              /* handle alt. character set */
-            fputs((style.attr & TwinAlt) ? SO : SI, xt->output);
+            fputs((style.attr & TwinAlt) ? SO : SI, xterm->output);
             change = 1;
         }
         screen_style.attr &= ~TwinAlt; /* clear ACS differences */
@@ -198,15 +198,15 @@ static int xt_style(Xterminator * xt, TwinCell style)
 
         if (screen_style.attr != style.attr)
         {                              /* handle misc. other attributes */
-            fputs(ESC "[", xt->output);
+            fputs(ESC "[", xterm->output);
             for (int i = 0; i < 8; ++i)
             {
                 if (style.attr & (1 << i))
                 {                      /* note: first ';' clears attributes */
-                    fprintf(xt->output, ";%d", i + 1);
+                    fprintf(xterm->output, ";%d", i + 1);
                 }
             }
-            fputc('m', xt->output);
+            fputc('m', xterm->output);
             screen_style.fg = TWIN_DEFAULT_COLOUR;  /* mode changes reset fg, bg */
             screen_style.bg = TWIN_DEFAULT_COLOUR;
             change = 1;
@@ -217,11 +217,11 @@ static int xt_style(Xterminator * xt, TwinCell style)
     {                                  /* adjust foreground colour */
         if (style.fg <= 9)
         {
-            fprintf(xt->output, xt_fg_8_cmd, style.fg);
+            fprintf(xterm->output, xt_fg_8_cmd, style.fg);
         }
         else
         {
-            fprintf(xt->output, xt_fg_256_cmd, style.fg);
+            fprintf(xterm->output, xt_fg_256_cmd, style.fg);
         }
         change = 1;
     }
@@ -229,27 +229,27 @@ static int xt_style(Xterminator * xt, TwinCell style)
     {                                  /* adjust background too */
         if (style.bg <= 9)
         {
-            fprintf(xt->output, xt_bg_8_cmd, style.bg);
+            fprintf(xterm->output, xt_bg_8_cmd, style.bg);
         }
         else
         {
-            fprintf(xt->output, xt_bg_256_cmd, style.bg);
+            fprintf(xterm->output, xt_bg_256_cmd, style.bg);
         }
         change = 1;
     }
     return change;
 }
 
-static void xt_cursor(Xterminator * xt, int row, int column)
+static void xterm_cursor(Xterminator * xterm, int row, int column)
 {
-    if (xt->screen.cursor.row == row && xt->screen.cursor.column == column)
+    if (xterm->screen.cursor.row == row && xterm->screen.cursor.column == column)
     {
         return;                        /* we're already there */
     }
     /* TODO: logic to move cursor efficiently on same row */
-    fprintf(xt->output, xt_cup_cmd, row + 1, column + 1);
-    xt->screen.cursor.row = row;
-    xt->screen.cursor.column = column;
+    fprintf(xterm->output, xt_cup_cmd, row + 1, column + 1);
+    xterm->screen.cursor.row = row;
+    xterm->screen.cursor.column = column;
 }
 
 
@@ -258,28 +258,28 @@ static void xt_cursor(Xterminator * xt, int row, int column)
 /*
  * free_xterminator() --Release any resources used by a Xterminator.
  */
-void free_xterminator(Xterminator * xt)
+void free_xterminator(Xterminator * xterm)
 {
-    if (xt->screen.frame != NULL)
+    if (xterm->screen.frame != NULL)
     {
-        free(xt->screen.frame);
+        free(xterm->screen.frame);
     }
-    if (xt->root.frame != NULL)
+    if (xterm->root.frame != NULL)
     {
-        free(xt->root.frame);
+        free(xterm->root.frame);
     }
-    memset(xt, 0, sizeof(*xt));        /* safety: clear bytes */
-    free(xt);
+    memset(xterm, 0, sizeof(*xterm));        /* safety: clear bytes */
+    free(xterm);
 }
 
-void xt_mainloop(Xterminator * xt)
+void xterm_mainloop(Xterminator * xterm)
 {
     static const TwinCoordinate no_offset = { 0, 0 };
 
     for (;;)
     {
-        twin_compose(&xt->root, &xt->root, no_offset);
-        xt_sync(xt);
+        twin_compose(&xterm->root, &xterm->root, no_offset);
+        xterm_sync(xterm);
         /* wait for input or timer... */
         /* and then do what!? */
     }
