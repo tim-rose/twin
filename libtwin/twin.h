@@ -114,6 +114,8 @@ extern "C"
     Twindow *twin_vline(Twindow * twin, int row, int column, int size);
     Twindow *twin_compose(Twindow * dst, Twindow * src,
                           TwinCoordinate offset);
+    Twindow *twin_add_child(Twindow * parent, Twindow * child);
+    Twindow *twin_remove_child(Twindow * parent, Twindow * child);
 #ifdef __cplusplus
 }
 #endif /* C++ */

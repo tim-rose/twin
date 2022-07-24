@@ -31,6 +31,7 @@ Twindow *twin_init(Twindow * twin, Twindow * parent,
                    TwinCell * frame)
 {
     memset(twin, 0, sizeof(*twin));    /* nulls linkage pointers */
+    twin->parent = parent;
     twin->geometry.position.row = row;
     twin->geometry.position.column = column;
     twin->geometry.size.row = height;
@@ -266,9 +267,9 @@ Twindow *twin_box(Twindow * tw, int row, int column,
 
 Twindow *twin_printf(Twindow * twin, const char *format, ...)
 {
-    char text[twin->geometry.size.column];
+    /* char text[twin->geometry.size.column]; */
 
-    err("%s() is not implemented", __func__);
+    err("%s(): not implemented", __func__);
     return NULL;
 }
 
@@ -310,4 +311,30 @@ Twindow *twin_compose(Twindow * dst, Twindow * src, TwinCoordinate offset)
         twin_compose(dst, child, offset);
     }
     return dst;
+}
+
+Twindow *twin_add_child(Twindow * parent, Twindow * child)
+{
+    if (parent->child == NULL)
+    {                                  /* only child */
+        parent->child = child;
+    }
+    else
+    {                                  /* append to end of sibling list */
+        Twindow *sibling = parent->child;
+
+        while (sibling->sibling != NULL)
+        {                              /* find last sibling */
+            sibling = sibling->sibling;
+        }
+        sibling->sibling = child;
+        child->sibling = NULL;         /* safety: terminate sibling list */
+    }
+    return parent->child;              /* return first child */
+}
+
+Twindow *twin_remove_child(Twindow * parent, Twindow * child)
+{
+    err("%s(): not implemented", __func__);
+    return NULL;
 }

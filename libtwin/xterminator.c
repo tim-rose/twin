@@ -4,7 +4,7 @@
  * Contents:
  * xterminator_init()  --Initialise the Xterminator structure.
  * close_xterminator() --Close, release resources, reset terminal.
- * xterm_sync()           --Render any changes to the device.
+ * xterm_sync()        --Render any changes to the device.
  * free_xterminator()  --Release any resources used by a Xterminator.
  *
  * Remarks:
@@ -25,7 +25,7 @@
 #define SI "<si>"
 #define ESC "<esc>"
 #else
-#define SO "\016"                       /* TODO: \e(0, \e(B */
+#define SO "\016"                      /* TODO: \e(0, \e(B */
 #define SI "\017"
 #define ESC "\033"
 #endif /* DEBUG_TTY */
@@ -90,7 +90,7 @@ Xterminator *xterminator_init(Xterminator * xterm, int input, FILE * output)
     twin_init(&xterm->screen,
               NULL, 0, 0, size.ws_row, size.ws_col,
               malloc(size.ws_row * size.ws_col * sizeof(TwinCell)));
-    return xterm;                         /* success */
+    return xterm;                      /* success */
 }
 
 void open_xterminator(Xterminator * xterm)
@@ -129,10 +129,10 @@ int xterm_sync(Xterminator * xterm)
 
     debug("%s(): position: %d, %d. size: %d, %d",
           __func__,
-          xterm->root.geometry.position.row, xterm->root.geometry.position.column,
-          xterm->root.geometry.size.row, xterm->root.geometry.size.column);
-    debug("%s(): damage: min: %d, %d. max: %d, %d",
-          __func__,
+          xterm->root.geometry.position.row,
+          xterm->root.geometry.position.column, xterm->root.geometry.size.row,
+          xterm->root.geometry.size.column);
+    debug("%s(): damage: min: %d, %d. max: %d, %d", __func__,
           xterm->root.damage.min.row, xterm->root.damage.min.column,
           xterm->root.damage.max.row, xterm->root.damage.max.column);
 
@@ -141,7 +141,8 @@ int xterm_sync(Xterminator * xterm)
         return change;                 /* nothing is damaged */
     }
 
-    for (int r = xterm->root.damage.min.row; r <= xterm->root.damage.max.row; ++r)
+    for (int r = xterm->root.damage.min.row; r <= xterm->root.damage.max.row;
+         ++r)
     {
         for (int c = xterm->root.damage.min.column;
              c <= xterm->root.damage.max.column; ++c)
@@ -149,8 +150,8 @@ int xterm_sync(Xterminator * xterm)
             int offset = twin_cell(xterm->root.geometry, r, c);
             TwinCell cell = xterm->root.frame[offset];
 
-            if (memcmp(&cell, &xterm->screen.frame[offset], sizeof(TwinCell)) ==
-                0)
+            if (memcmp(&cell, &xterm->screen.frame[offset], sizeof(TwinCell))
+                == 0)
             {
                 continue;
             }
@@ -242,7 +243,8 @@ static int xterm_style(Xterminator * xterm, TwinCell style)
 
 static void xterm_cursor(Xterminator * xterm, int row, int column)
 {
-    if (xterm->screen.cursor.row == row && xterm->screen.cursor.column == column)
+    if (xterm->screen.cursor.row == row
+        && xterm->screen.cursor.column == column)
     {
         return;                        /* we're already there */
     }
@@ -268,7 +270,7 @@ void free_xterminator(Xterminator * xterm)
     {
         free(xterm->root.frame);
     }
-    memset(xterm, 0, sizeof(*xterm));        /* safety: clear bytes */
+    memset(xterm, 0, sizeof(*xterm));  /* safety: clear bytes */
     free(xterm);
 }
 
