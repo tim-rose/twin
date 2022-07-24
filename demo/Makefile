@@ -1,10 +1,12 @@
 #
-# Makefile --Build rules for libtwin's demo code
+# Makefile --Build rules for libtwin's demo code.
+#
+# The demo code just runs through some screen theatrics.
 #
 language = c
 
-C_MAIN_SRC = twidget-demo.c twin-root.c
-C_SRC = twidget-demo.c twin-root.c
+C_MAIN_SRC = root-demo.c twidget-demo.c
+C_SRC = root-demo.c twidget-demo.c
 BUILD_PATH = ../libtwin
 
 include makeshift.mk

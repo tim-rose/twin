@@ -1,5 +1,5 @@
 /*
- * TWIN-ROOT.C --Demo program that draws on the main root window only.
+ * ROOT-DEMO.C --Demo program that draws on the main root window only.
  */
 #include <unistd.h>
 #include <stdio.h>
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 
     twin_box(root, 0, 0, root->geometry.size.row, root->geometry.size.column);
     twin_cursor(root, 0, 1);
-    twin_puts(root, "twin-root");
+    twin_puts(root, "root-demo");
     xterm_sync(xterminator);
 
     style_box(root, 3, 5);
