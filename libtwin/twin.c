@@ -5,8 +5,9 @@
  *
  * Remarks:
  */
-#include <log.h>
-#include <estring.h>
+#include <apex.h>
+#include <apex/log.h>
+#include <apex/estring.h>
 #include "twin.h"
 
 extern inline int twin_cell(TwinGeometry geometry, int row, int column);

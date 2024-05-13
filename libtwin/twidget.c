@@ -6,7 +6,8 @@
  * Remarks:
  */
 #include <string.h>
-#include <log.h>
+#include <apex.h>
+#include <apex/log.h>
 #include "twidget.h"
 
 

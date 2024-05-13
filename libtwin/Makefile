@@ -1,6 +1,7 @@
 #
 # Makefile --Build rules for libtwin, the text window library.
 #
+BUILD_PATH = ../../apex/libapex
 language = c
 C_SRC = twidget.c twin.c xterminator.c
 H_SRC = twidget.h twin.h xterminator.h

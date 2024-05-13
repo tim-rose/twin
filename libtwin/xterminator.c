@@ -16,8 +16,9 @@
  * Root and screen are compared when updating the actual screen.
  */
 #include <sys/ioctl.h>
-#include <log.h>
-#include <estring.h>
+#include <apex.h>
+#include <apex/log.h>
+#include <apex/estring.h>
 #include "xterminator.h"
 
 #ifdef DEBUG_TTY

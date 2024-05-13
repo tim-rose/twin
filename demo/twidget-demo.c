@@ -6,8 +6,8 @@
 #include <signal.h>
 #include <sys/ioctl.h>
 
-#include <xtd.h>
-#include <log.h>
+#include <apex.h>
+#include <apex/log.h>
 #include <xterminator.h>
 #include <twidget.h>
 

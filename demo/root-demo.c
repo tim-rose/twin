@@ -6,8 +6,8 @@
 #include <signal.h>
 #include <sys/ioctl.h>
 
-#include <xtd.h>
-#include <log.h>
+#include <apex.h>
+#include <apex/log.h>
 #include <xterminator.h>
 
 static int resize_signal;
@@ -30,14 +30,19 @@ static void xterminate(void)
 }
 
 
-static void exit_gracefully(int UNUSED(signal))
+static void atexit_gracefully(void)
 {
     xterminate();
     exit(0);
 }
 
+static void exit_gracefully(int UNUSED(signal))
+{
+    atexit_gracefully();
+}
 
-static void ack_resize(int signal)
+
+static void ack_resize(int UNUSED(signal))
 {
     resize_signal = 1;
 }
@@ -71,7 +76,7 @@ int main(int argc, char *argv[])
     signal(SIGWINCH, ack_resize);
     signal(SIGINT, exit_gracefully);
     signal(SIGQUIT, exit_gracefully);
-    atexit(exit_gracefully);
+    atexit(atexit_gracefully);
 
     xterminator = new_xterminator(STDIN_FILENO, output);
     Twindow *root = &xterminator->root;
@@ -138,7 +143,7 @@ static void sampler_box(Twindow * tw, int row, int column)
     twin_puts(tw, "sampler");
     xterm_sync(xterminator);
     usleep(500000);
-    for (int i = 0; i < 32; ++i)
+    for (int i = 0; i < 31; ++i)
     {
         char str[2] = { '`' + i, '\0' };
 
@@ -149,7 +154,7 @@ static void sampler_box(Twindow * tw, int row, int column)
     usleep(500000);
     ++row;
     tw->style.attr = TwinAlt;
-    for (int i = 0; i < 32; ++i)
+    for (int i = 0; i < 31; ++i)
     {
         char str[2] = { '`' + i, '\0' };
 

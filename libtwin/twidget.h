@@ -1,5 +1,8 @@
 /*
- * TWIDGET.H --Definitions for Text WINdows.
+ * TWIDGET.H --Text widgets, windows with custom behaviour.
+ *
+ * Remarks:
+ * This is an MVC experiment...
  *
  */
 #ifndef TWIDGET_H
@@ -17,7 +20,8 @@ extern "C"
     {
         Twindow window;
         const char *name;
-        TwinProc control;
+        TwinProc control;       /* update the model based on an event */
+        TwinProc draw;                  /* render the model into the window */
     };
 
     typedef struct TwidgetText_t
