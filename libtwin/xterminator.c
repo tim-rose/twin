@@ -37,7 +37,7 @@ static const char xt_init_cmd[] =      /* initialisation commands... */
     ESC "[4l"                          /* replace mode */
     ESC ">"                            /* "normal" keypad */
     ESC ")0"                           /* enable DEC alternate characters */
-    ESC "[?1049h";                     /* save cursor, switch to alt. screen */
+    ESC "[?1049h"                      /* save cursor, switch to alt. screen */
     ESC "[H";                          /* home cursor, for buggy Windows */
 static const char xt_end_cmd[] = ESC "[?1049l"; /* restore cursor, screen */
 static const char xt_cup_cmd[] = ESC "[%d;%dH";
