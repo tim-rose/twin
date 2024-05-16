@@ -6,6 +6,7 @@
 #define TWIN_H
 
 #include <unistd.h>
+#include <stdint.h>
 #include <apex.h>
 
 #ifdef __cplusplus
